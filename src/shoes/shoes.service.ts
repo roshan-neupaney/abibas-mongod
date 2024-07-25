@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateShoeDto } from './dto/create-shoe.dto';
 import { UpdateShoeDto } from './dto/update-shoe.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ShoesType } from './shoes.types';
 
 @Injectable()
 export class ShoesService {
@@ -10,8 +11,13 @@ export class ShoesService {
     return await this.prisma.shoe.create({data: createShoeDto});
   }
 
-  findAll() {
-    return this.prisma.shoe.findMany();
+  findAll(query: ShoesType) {
+    const {category} = query;
+    return this.prisma.shoe.findMany({
+      where: {
+        category
+      }
+    });
   }
 
   findOne(id: string) {
