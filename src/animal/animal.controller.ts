@@ -39,7 +39,6 @@ export class AnimalController {
     if(uploadedFile){
       createAnimalDto.image_name = uploadedFile.fileName;
       }
-    console.log('file', file)
     return this.animalService.create(createAnimalDto);
   }
 

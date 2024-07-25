@@ -14,6 +14,7 @@ import { UserModule } from './user/user.module';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { AnimalCategoryModule } from './animal-category/animal-category.module';
 import { AnimalModule } from './animal/animal.module';
+import { ShoesModule } from './shoes/shoes.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AnimalModule } from './animal/animal.module';
     AuthenticationModule,
     AnimalCategoryModule,
     AnimalModule,
+    ShoesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

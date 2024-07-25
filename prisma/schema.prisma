@@ -53,6 +53,19 @@ model Animal {
   image_name          String?
 }
 
+model Shoe {
+  id                  String              @id @default(uuid())
+  title               String
+  brand               String
+  color               String
+  size                String
+  price               String
+  description         String
+  category            String
+  image_name          String
+  createdAt           DateTime       @default(now()) @map("created_at")
+}
+
 enum Role {
   SUPERADMIN
   ADMIN
