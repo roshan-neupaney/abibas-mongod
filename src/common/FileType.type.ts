@@ -7,3 +7,12 @@ export type ImageType = {
     path: string;
     sizes: Array<{name: string, fileName:string, url: string}>
 }
+export type VideoType = {
+    originalName: string;
+    filename: string;
+    mimeType: string;
+    size: number;
+    url: string;
+    path: string;
+    sizes: Array<{name: string, fileName:string, url: string}>
+}

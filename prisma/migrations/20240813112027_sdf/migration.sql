@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Variation" ALTER COLUMN "stock" SET DEFAULT '1',
+ALTER COLUMN "stock" SET DATA TYPE TEXT;

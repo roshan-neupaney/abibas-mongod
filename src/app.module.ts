@@ -15,6 +15,9 @@ import { AuthenticationModule } from './authentication/authentication.module';
 import { AnimalCategoryModule } from './animal-category/animal-category.module';
 import { AnimalModule } from './animal/animal.module';
 import { ShoesModule } from './shoes/shoes.module';
+import { VideoModule } from './video/video.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AtGuard } from './common/guards/at.guard';
 
 @Module({
   imports: [
@@ -25,9 +28,16 @@ import { ShoesModule } from './shoes/shoes.module';
     AnimalCategoryModule,
     AnimalModule,
     ShoesModule,
+    VideoModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AtGuard,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

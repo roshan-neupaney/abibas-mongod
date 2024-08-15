@@ -15,17 +15,20 @@ import { UpdateAuthenticationDto } from './dto/update-authentication.dto';
 import { CreateRefreshDto } from './dto/create-refresh.dto';
 import { CreateLoginDto } from './dto/create-login.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('authentication')
 @ApiTags('authentication')
 export class AuthenticationController {
   constructor(private readonly authenticationService: AuthenticationService) {}
 
+  @Public()
   @Post('signup')
   create(@Body() createAuthenticationDto: CreateAuthenticationDto) {
     return this.authenticationService.create(createAuthenticationDto);
   }
 
+  @Public()
   @Post('refresh')
   refresh(@Body() createRefreshDto: CreateRefreshDto) {
     try {
@@ -35,12 +38,14 @@ export class AuthenticationController {
     }
   }
 
+  @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   login(@Body() body: CreateLoginDto){
     return this.authenticationService.login(body)
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.authenticationService.findAll();

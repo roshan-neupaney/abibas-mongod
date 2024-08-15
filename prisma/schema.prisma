@@ -9,20 +9,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id          String    @id @default(uuid())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  hash        String
-  hashedRt    String?
-  email       String    @unique
-  firstName   String?
-  lastName    String?
-  mobile      String?
-  role        Role      @default(USER)
-  @@map("users")
-}
-
 model MyUsers {
   id          String    @id @default(uuid())
   createdAt   DateTime  @default(now())
@@ -34,6 +20,9 @@ model MyUsers {
   lastName    String?
   mobile      String?
   role        Role      @default(USER)
+  videos      Videos[]
+  image_name  String?
+  cart        Cart[]
   @@map("myUsers")
 }
 
@@ -53,17 +42,62 @@ model Animal {
   image_name          String?
 }
 
+model Cart {
+  id                  String              @id @default(uuid())
+  product_id          String
+  user_id             String
+  size                String
+  color               String
+  count               Int                 @default(1)
+  user                MyUsers             @relation(fields:[user_id], references:[id])
+  shoe                Shoe                @relation(fields: [product_id], references: [id])
+}
+
 model Shoe {
   id                  String              @id @default(uuid())
   title               String
   brand               String
-  color               String
-  size                String
   price               String
   description         String
   category            String
-  image_name          String
+  details             Json                      
+  cart                Cart[]         
+  colorVariation      ColorVariation[]
   createdAt           DateTime       @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt
+}
+
+model ColorVariation {
+  id                  String              @id @default(uuid())
+  color               String
+  image_url           String 
+  sizes               Size[]   
+  shoe_id             String
+  shoe                Shoe              @relation(fields:[shoe_id], references:[id], onDelete: Cascade)             
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt
+}
+
+model Size {
+  id                  String              @id @default(uuid())
+  size                String
+  stock               String              @default("1")
+  color_variation_id  String              
+  colorVariation      ColorVariation      @relation(fields:[color_variation_id], references:[id], onDelete: Cascade)  
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt
+}
+
+
+
+
+model Videos {
+  id                  String              @id @default(uuid())
+  title               String
+  video_name          String
+  user_id             String
+  createdAt           DateTime            @default(now()) @map("created_at")
+  user                MyUsers             @relation(fields: [user_id], references: [id])
 }
 
 enum Role {
@@ -73,3 +107,5 @@ enum Role {
   PROVIDER
   USER
 }
+
+

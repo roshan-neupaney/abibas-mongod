@@ -16,7 +16,7 @@ import { CreateAnimalDto } from './dto/create-animal.dto';
 import { UpdateAnimalDto } from './dto/update-animal.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UploadImageWithSizes } from 'src/common/helper';
+import { uploadImageWithSizes } from 'src/common/helper';
 import { ImageType } from 'src/common/FileType.type';
 import { multerOptions } from 'src/common/multer.config';
 
@@ -34,7 +34,7 @@ export class AnimalController {
   ) {
     let uploadedFile: ImageType | null = null;
     if(file){
-      uploadedFile = await UploadImageWithSizes(file)
+      uploadedFile = await uploadImageWithSizes(file)
     }
     if(uploadedFile){
       createAnimalDto.image_name = uploadedFile.fileName;
