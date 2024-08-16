@@ -20,6 +20,7 @@ model MyUsers {
   lastName    String?
   mobile      String?
   role        Role      @default(USER)
+  favorite    Favorite[]
   videos      Videos[]
   image_name  String?
   cart        Cart[]
@@ -44,13 +45,14 @@ model Animal {
 
 model Cart {
   id                  String              @id @default(uuid())
-  product_id          String
+  shoe_id             String
   user_id             String
   size                String
-  color               String
+  color_variation_id  String
   count               Int                 @default(1)
+  colorVariation      ColorVariation      @relation(fields:[color_variation_id], references:[id])
   user                MyUsers             @relation(fields:[user_id], references:[id])
-  shoe                Shoe                @relation(fields: [product_id], references: [id])
+  shoe                Shoe                @relation(fields: [shoe_id], references: [id])
 }
 
 model Shoe {
@@ -62,6 +64,7 @@ model Shoe {
   category            String
   details             Json                      
   cart                Cart[]         
+  favorite            Favorite?     
   colorVariation      ColorVariation[]
   createdAt           DateTime       @default(now()) @map("created_at")
   updatedAt           DateTime            @updatedAt
@@ -73,6 +76,7 @@ model ColorVariation {
   image_url           String 
   sizes               Size[]   
   shoe_id             String
+  cart                Cart[]
   shoe                Shoe              @relation(fields:[shoe_id], references:[id], onDelete: Cascade)             
   createdAt           DateTime          @default(now()) @map("created_at")
   updatedAt           DateTime          @updatedAt
@@ -84,6 +88,16 @@ model Size {
   stock               String              @default("1")
   color_variation_id  String              
   colorVariation      ColorVariation      @relation(fields:[color_variation_id], references:[id], onDelete: Cascade)  
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt
+}
+
+model Favorite {
+  id                  String              @id @default(uuid())
+  shoe_id             String              @unique
+  user_id             String              
+  shoe                Shoe                @relation(fields:[shoe_id], references:[id])  
+  user                MyUsers             @relation(fields:[user_id], references:[id])  
   createdAt           DateTime            @default(now()) @map("created_at")
   updatedAt           DateTime            @updatedAt
 }

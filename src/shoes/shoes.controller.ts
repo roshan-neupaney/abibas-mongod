@@ -23,6 +23,7 @@ import { AuthUser } from 'src/common/decorators/user.decorator';
 import { uploadImageWithNoSizes } from 'src/common/helper';
 import { VariationDto } from './dto/create-variation.dto';
 import { SizeDto } from './dto/create-size.dto';
+import { AuthUserType } from 'src/common/FileType.type';
 
 @Controller('shoes')
 @UsePipes(ValidationPipe)
@@ -37,12 +38,13 @@ export class ShoesController {
     @UploadedFiles() files: Express.Multer.File[],
   ) {
     try {
-      const colorVariation = await Promise.all(createShoeDto.color_variation.map(async (cv: any) => {
-        const file = files.shift();
-        const imageName = await uploadImageWithNoSizes(file);
-        return { ...cv, image_url: imageName.fileName };
-        
-      }));
+      const colorVariation = await Promise.all(
+        createShoeDto.color_variation.map(async (cv: any) => {
+          const file = files.shift();
+          const imageName = await uploadImageWithNoSizes(file);
+          return { ...cv, image_url: imageName.fileName };
+        }),
+      );
 
       return this.shoesService.create(createShoeDto, colorVariation);
     } catch (error) {
@@ -70,15 +72,15 @@ export class ShoesController {
     const color_variation = updateShoeDto.color_variation || [];
     const colorVariation = await Promise.all(
       color_variation?.map(async (cv) => {
-        if(cv.file){
+        if (cv.file) {
           return { ...cv, image_url: cv.file };
         } else {
           const file = files.shift();
           const image = await uploadImageWithNoSizes(file);
           return { ...cv, image_url: image.fileName };
         }
-    }
-  ))
+      }),
+    );
     return this.shoesService.update(id, updateShoeDto, colorVariation);
   }
 
@@ -94,12 +96,21 @@ export class ShoesController {
   }
 
   @Get('user/cart')
-  findAllCart(@AuthUser() user: any) {
+  findAllCart(@AuthUser() user: AuthUserType) {
     return this.shoesService.findAllCart(user.sub);
   }
 
-  @Delete(':id')
-  deleteCart(@Param() id: string) {
+  @Delete('user/cart/:id')
+  deleteCart(@Param('id') id: string) {
     return this.shoesService.deleteCart(id);
+  }
+
+  @Post('user/favorite/:id')
+  createFavorite(@Param('id') id: string, @AuthUser() user: AuthUserType) {
+    return this.shoesService.createFavorites(id, user.sub);
+  }
+  @Get('user/favorite')
+  findAllFavorite(@AuthUser() user: AuthUserType) {
+    return this.shoesService.findAllFavorites(user.sub);
   }
 }

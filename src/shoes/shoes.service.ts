@@ -84,6 +84,12 @@ export class ShoesService {
             },
           },
         },
+        favorite: {
+          select: {
+            id: true,
+            shoe_id: true,
+          },
+        },
       },
     });
   }
@@ -152,10 +158,7 @@ export class ShoesService {
           const existingImage = await this.prisma.colorVariation.findUnique({
             where: { id: cv.id },
           });
-          if (
-            existingImage &&
-            !(existingImage.image_url === cv.image_url)
-          ) {
+          if (existingImage && !(existingImage.image_url === cv.image_url)) {
             const existingImagePath = join(
               './public',
               'uploads',
@@ -172,7 +175,7 @@ export class ShoesService {
             },
             data: {
               color: cv.color,
-              image_url: cv.image_url
+              image_url: cv.image_url,
             },
           });
           const resSize = await Promise.all(
@@ -236,7 +239,9 @@ export class ShoesService {
   async createCart(createCartDto: CreateCartDto) {
     const existingProduct = await this.prisma.cart.findFirst({
       where: {
-        product_id: createCartDto.product_id,
+        shoe_id: createCartDto.shoe_id,
+        size: createCartDto.size,
+        color_variation_id: createCartDto.color_variation_id,
       },
     });
     if (existingProduct) {
@@ -251,9 +256,9 @@ export class ShoesService {
     } else {
       return await this.prisma.cart.create({
         data: {
-          product_id: createCartDto.product_id,
+          shoe_id: createCartDto.shoe_id,
           size: createCartDto.size,
-          color: createCartDto.color,
+          color_variation_id: createCartDto.color_variation_id,
           user_id: createCartDto.user_id,
         },
       });
@@ -265,8 +270,23 @@ export class ShoesService {
       where: {
         user_id,
       },
-      include: {
-        shoe: {},
+      select: {
+        id: true,
+        size: true,
+        count: true,
+        shoe: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+        colorVariation: {
+          select: {
+            id: true,
+            color: true,
+            image_url: true,
+          },
+        },
       },
     });
   }
@@ -283,5 +303,36 @@ export class ShoesService {
         where: { id: existingProduct.id },
       });
     }
+  }
+
+  async createFavorites(shoeId: string, userId: string) {
+    const existingFavorite = await this.prisma.favorite.findFirst({
+      where: { shoe_id: shoeId },
+    });
+    if (existingFavorite) {
+      return await this.prisma.favorite.delete({
+        where: {
+          id: existingFavorite.id,
+        },
+      });
+    } else {
+      return await this.prisma.favorite.create({
+        data: {
+          shoe_id: shoeId,
+          user_id: userId,
+        },
+      });
+    }
+  }
+  async findAllFavorites(userId: string) {
+    return await this.prisma.favorite.findMany({
+      where: {
+        user_id: userId,
+      },
+      select: {
+        id: true,
+        shoe: true,
+      },
+    });
   }
 }

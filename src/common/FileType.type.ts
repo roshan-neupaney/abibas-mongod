@@ -1,3 +1,5 @@
+import { Role } from "src/authentication/role.enum";
+
 export type ImageType = {
     originalName: string;
     fileName: string;
@@ -15,4 +17,12 @@ export type VideoType = {
     url: string;
     path: string;
     sizes: Array<{name: string, fileName:string, url: string}>
+}
+
+export type AuthUserType = {
+    sub: string;
+    email: string;
+    role: Role;
+    iat: number;
+    exp: number;
 }
