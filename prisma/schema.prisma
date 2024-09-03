@@ -24,6 +24,7 @@ model MyUsers {
   videos      Videos[]
   image_name  String?
   cart        Cart[]
+  order       Order[]
   @@map("myUsers")
 }
 
@@ -63,10 +64,11 @@ model Shoe {
   description         String
   category            String
   details             Json                      
-  cart                Cart[]         
+  cart                Cart[]
+  order               Order[]         
   favorite            Favorite?     
   colorVariation      ColorVariation[]
-  createdAt           DateTime       @default(now()) @map("created_at")
+  createdAt           DateTime            @default(now()) @map("created_at")
   updatedAt           DateTime            @updatedAt
 }
 
@@ -100,6 +102,42 @@ model Favorite {
   user                MyUsers             @relation(fields:[user_id], references:[id])  
   createdAt           DateTime            @default(now()) @map("created_at")
   updatedAt           DateTime            @updatedAt
+}
+
+model Order {
+  id                  String              @id @default(uuid())
+  user_id             String               
+  totalAmount         String
+  shoe_id             String              
+  user                MyUsers             @relation(fields:[user_id], references:[id])        
+  shoe                Shoe                @relation(fields:[shoe_id], references:[id])        
+  status              OrderStatus         @default(PENDING)
+  payment             Payment?            
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+}
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+model Payment {
+  id                  String              @id @default(uuid())
+  orderId             String              @unique
+  amount              String
+  status              PaymentStatus       @default(PENDING)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  order               Order               @relation(fields: [orderId], references: [id])
+
+}
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
 }
 
 

@@ -18,6 +18,8 @@ import { ShoesModule } from './shoes/shoes.module';
 import { VideoModule } from './video/video.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AtGuard } from './common/guards/at.guard';
+import { PaymentModule } from './payment/payment.module';
+import { EsewaModule } from './esewa/esewa.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { AtGuard } from './common/guards/at.guard';
     AnimalModule,
     ShoesModule,
     VideoModule,
+    PaymentModule,
+    EsewaModule,
   ],
   controllers: [AppController],
   providers: [

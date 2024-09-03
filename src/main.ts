@@ -23,9 +23,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
+  app.setBaseViewsDir(path.join(__dirname, '..', 'views'));
+  app.setViewEngine('ejs');
+
   app.useStaticAssets(path.join(__dirname, '../public/uploads'));
   app.useGlobalPipes(new ValidationPipe({ transform: true }))
   app.enableCors();
-  await app.listen(3000);
+  await app.listen(3001);
 }
 bootstrap();
