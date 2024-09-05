@@ -1,3 +1,3 @@
 export type ShoesType = {
-    category: string;
+    category_id: string;
 }

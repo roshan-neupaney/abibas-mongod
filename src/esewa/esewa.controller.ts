@@ -6,8 +6,10 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { AuthUser } from 'src/common/decorators/user.decorator';
 import { AuthUserType } from 'src/common/FileType.type';
 import { PaymentService } from './payment.service';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('esewa')
+@ApiTags('esewa')
 export class EsewaController {
   constructor(
     private readonly esewaService: EsewaService,

@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateShoeDto } from './dto/create-shoe.dto';
 import { UpdateShoeDto } from './dto/update-shoe.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -19,11 +19,13 @@ export class ShoesService {
         const shoeResponse = await prisma.shoe.create({
           data: {
             title: createShoeDto.title,
-            brand: createShoeDto.brand,
+            brand_id: createShoeDto.brand_id,
+            category_id: createShoeDto.category_id,
             price: createShoeDto.price,
+            previous_price: createShoeDto.previous_price,
             description: createShoeDto.description,
-            category: createShoeDto.category,
             details: createShoeDto.details,
+            status: createShoeDto.status,
           },
         });
 
@@ -49,47 +51,21 @@ export class ShoesService {
       });
       return result;
     } catch (error) {
-      throw new HttpException(error.message, error.status);
+      console.log('error.message', error.message)
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   findAll(query: ShoesType) {
-    const { category } = query;
+    const { category_id } = query;
     return this.prisma.shoe.findMany({
       where: {
-        category,
+        category_id,
       },
-      select: {
-        id: true,
-        title: true,
-        brand: true,
-        price: true,
-        description: true,
+      include: {
         category: true,
-        details: true,
-        createdAt: true,
-        updatedAt: true,
-        colorVariation: {
-          select: {
-            id: true,
-            color: true,
-            image_url: true,
-            createdAt: true,
-            sizes: {
-              select: {
-                id: true,
-                size: true,
-                stock: true,
-              },
-            },
-          },
-        },
-        favorite: {
-          select: {
-            id: true,
-            shoe_id: true,
-          },
-        },
+        colorVariation: true,
+        brand: true,
       },
     });
   }
@@ -99,31 +75,14 @@ export class ShoesService {
       where: {
         id,
       },
-      select: {
-        id: true,
-        title: true,
-        brand: true,
-        price: true,
-        description: true,
+      include: {
         category: true,
-        details: true,
-        createdAt: true,
-        updatedAt: true,
         colorVariation: {
-          select: {
-            id: true,
-            color: true,
-            image_url: true,
-            createdAt: true,
-            sizes: {
-              select: {
-                id: true,
-                size: true,
-                stock: true,
-              },
-            },
-          },
+          include: {
+            sizes: true
+          }
         },
+        brand: true,
       },
     });
   }
@@ -135,11 +94,13 @@ export class ShoesService {
       where: { id },
       data: {
         title: updateShoeDto.title,
-        brand: updateShoeDto.brand,
+        brand_id: updateShoeDto.brand_id,
         price: updateShoeDto.price,
+        previous_price: updateShoeDto.previous_price,
         description: updateShoeDto.description,
-        category: updateShoeDto.category,
+        category_id: updateShoeDto.category_id,
         details: updateShoeDto.details,
+        status: updateShoeDto.status
       },
     });
     if (deleteColorVariation?.length > 0) {

@@ -11,6 +11,8 @@ import {
   ValidationPipe,
   Query,
   UploadedFiles,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ShoesService } from './shoes.service';
 import { CreateShoeDto } from './dto/create-shoe.dto';
@@ -47,8 +49,8 @@ export class ShoesController {
       );
 
       return this.shoesService.create(createShoeDto, colorVariation);
-    } catch (error) {
-      console.log(error);
+    } catch (e) {
+      // throw new HttpException(e.message, e.status);
     }
   }
 

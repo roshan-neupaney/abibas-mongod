@@ -32,9 +32,9 @@ export class AuthenticationService {
           role: Role[createAuthenticationDto.role],
         },
       });
-      const token = await this.getToken(user.id, user.email, user.role);
-      await this.updateRtHash(user.id, token.refresh_token);
-      return token;
+      // const token = await this.getToken(user.id, user.email, user.role);
+      // await this.updateRtHash(user.id, token.refresh_token);
+      return user;
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {

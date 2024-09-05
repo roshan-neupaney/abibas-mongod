@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Shoe" ALTER COLUMN "category_id" DROP DEFAULT,
+ALTER COLUMN "details" DROP DEFAULT,
+ALTER COLUMN "brand_id" DROP DEFAULT,
+ALTER COLUMN "previous_price" DROP DEFAULT;

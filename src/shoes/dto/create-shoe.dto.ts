@@ -1,31 +1,47 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsNotEmpty } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString } from 'class-validator';
+import { StatusEnum } from 'src/common/all.enum';
 
 export class CreateShoeDto {
   @ApiProperty()
+  @IsString()
   @IsNotEmpty()
   title: string;
 
   @ApiProperty()
+  @IsString()
   @IsNotEmpty()
-  brand: string;
+  brand_id: string;
 
   @ApiProperty()
-  @IsArray()
+  @IsString()
   @IsNotEmpty()
-  details: Array<string>;
+  details: string;
 
   @ApiProperty()
+  @IsString()
   @IsNotEmpty()
   price: string;
 
   @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  previous_price: string;
+
+  @ApiProperty()
+  @IsString()
   @IsNotEmpty()
   description: string;
 
   @ApiProperty()
+  @IsString()
   @IsNotEmpty()
-  category: string;
+  category_id: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  status: StatusEnum;
 
   @ApiProperty()
   @IsNotEmpty()
