@@ -57,10 +57,12 @@ export class ShoesService {
   }
 
   findAll(query: ShoesType) {
-    const { category_id } = query;
+    const { category } = query;
     return this.prisma.shoe.findMany({
       where: {
-        category_id,
+        category : {
+          title: category
+        },
       },
       include: {
         category: true,
