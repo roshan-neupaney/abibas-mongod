@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
 import { CreateAuthenticationDto } from './dto/create-authentication.dto';
 import { UpdateAuthenticationDto } from './dto/update-authentication.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -107,7 +107,6 @@ export class AuthenticationService {
   }
 
   async login(body: CreateLoginDto) {
-    try {
       const user = await this.prisma.myUsers.findUnique({
         where: {
           email: body.email,
@@ -124,8 +123,6 @@ export class AuthenticationService {
       await this.updateRtHash(user.id, tokens.refresh_token);
 
       return tokens;
-    } catch (error) {
-      return error;
-    }
+   
   }
 }

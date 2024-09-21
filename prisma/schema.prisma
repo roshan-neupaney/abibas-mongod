@@ -10,39 +10,37 @@ datasource db {
 }
 
 model MyUsers {
-  id          String    @id @default(uuid())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  hash        String
-  hashedRt    String?
-  email       String    @unique
-  firstName   String?
-  lastName    String?
-  mobile      String?
-  role        Role      @default(USER)
-  favorite    Favorite[]
-  videos      Videos[]
-  image_name  String?
-  cart        Cart[]
-  order       Order[]
+  id                  String              @id @default(uuid())
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  hash                String          
+  hashedRt            String?         
+  email               String              @unique
+  firstName           String?         
+  lastName            String?         
+  mobile              String?         
+  status              Status              @default(ACTIVE)
+  role                Role                @default(USER)
+  favorite            Favorite[]
+  image_name          String?
+  cart                Cart[]
+  order               Order[]
+  interaction         Interaction[]
   @@map("myUsers")
 }
 
-model AnimalCategory {
-  id          String    @id @default(uuid())
-  title       String
-  description String
-  animals     Animal[]
+model Interaction {
+  id                  String              @id @default(uuid())
+  user_id             String
+  shoe_id             String
+  action_type         String
+  interaction_score   Int
+  shoe                Shoe                @relation(fields: [shoe_id], references: [id])
+  user                MyUsers             @relation(fields: [user_id], references: [id])
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt
 }
 
-model Animal {
-  id                  String              @id @default(uuid())
-  title               String
-  description         String
-  animal_category_id  String
-  animalCategory      AnimalCategory      @relation(fields: [animal_category_id], references:[id])
-  image_name          String?
-}
 
 model Cart {
   id                  String              @id @default(uuid())
@@ -72,6 +70,7 @@ model Shoe {
   colorVariation      ColorVariation[]
   category            Category            @relation(fields:[category_id], references:[id])
   brand               Brand               @relation(fields:[brand_id], references:[id])
+  interaction         Interaction[]
   createdAt           DateTime            @default(now()) @map("created_at")
   updatedAt           DateTime            @updatedAt
 }
@@ -88,7 +87,7 @@ model Category {
 
 model ColorVariation {
   id                  String              @id @default(uuid())
-  color               String
+  color               String[]            @default([])
   image_url           String 
   sizes               Size[]   
   shoe_id             String
@@ -96,6 +95,15 @@ model ColorVariation {
   shoe                Shoe              @relation(fields:[shoe_id], references:[id], onDelete: Cascade)             
   createdAt           DateTime          @default(now()) @map("created_at")
   updatedAt           DateTime          @updatedAt
+}
+
+model Color {
+  id                  String              @id @default(uuid())
+  title               String
+  color_code          String
+  status              Status              @default(PENDING)
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt
 }
 
 model Size {
@@ -168,18 +176,6 @@ enum PaymentStatus {
   PENDING
   SUCCESS
   FAILED
-}
-
-
-
-
-model Videos {
-  id                  String              @id @default(uuid())
-  title               String
-  video_name          String
-  user_id             String
-  createdAt           DateTime            @default(now()) @map("created_at")
-  user                MyUsers             @relation(fields: [user_id], references: [id])
 }
 
 enum Role {

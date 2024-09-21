@@ -32,7 +32,7 @@ export class ShoesService {
         for (const cv of colorVariation) {
           const cvResponse = await prisma.colorVariation.create({
             data: {
-              color: cv.color,
+              color: JSON.parse(cv.color),
               image_url: cv.image_url,
               shoe_id: shoeResponse.id,
             },
@@ -51,23 +51,41 @@ export class ShoesService {
       });
       return result;
     } catch (error) {
-      console.log('error.message', error.message)
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  findAll(query: ShoesType) {
-    const { category } = query;
-    return this.prisma.shoe.findMany({
+  async findAll(query: ShoesType) {
+    const { category, price_min, price_max, color } = query;
+    const colorArray = color ? color.split(',') : [];
+    return await this.prisma.shoe.findMany({
       where: {
-        category : {
-          title: category
+        category: {
+          title: {
+            contains: category,
+          },
         },
+        price: {
+          gte: price_min,
+          lte: price_max,
+        },
+        ...(colorArray.length > 0 && {
+          colorVariation: {
+            some: {
+              color: {
+                hasSome: colorArray,
+              },
+            },
+          },
+        }),
       },
       include: {
         category: true,
         colorVariation: true,
         brand: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
       },
     });
   }
@@ -81,8 +99,8 @@ export class ShoesService {
         category: true,
         colorVariation: {
           include: {
-            sizes: true
-          }
+            sizes: true,
+          },
         },
         brand: true,
       },
@@ -91,7 +109,7 @@ export class ShoesService {
 
   async update(id: string, updateShoeDto: UpdateShoeDto, colorVariation: any) {
     delete updateShoeDto['color_variation'];
-    const { deleteColorVariation, deleteSize } = updateShoeDto;
+    const { deleteColorVariation, deleteSizeVariation } = updateShoeDto;
     const shoeResponse = await this.prisma.shoe.update({
       where: { id },
       data: {
@@ -102,7 +120,7 @@ export class ShoesService {
         description: updateShoeDto.description,
         category_id: updateShoeDto.category_id,
         details: updateShoeDto.details,
-        status: updateShoeDto.status
+        status: updateShoeDto.status,
       },
     });
     if (deleteColorVariation?.length > 0) {
@@ -110,8 +128,8 @@ export class ShoesService {
         await this.prisma.colorVariation.delete({ where: { id: item } });
       }
     }
-    if (deleteSize?.length > 0) {
-      for (const item of deleteSize) {
+    if (deleteSizeVariation?.length > 0) {
+      for (const item of deleteSizeVariation) {
         await this.prisma.size.delete({ where: { id: item } });
       }
     }
@@ -137,7 +155,7 @@ export class ShoesService {
               id: cv.id,
             },
             data: {
-              color: cv.color,
+              color: JSON.parse(cv.color),
               image_url: cv.image_url,
             },
           });
@@ -168,7 +186,7 @@ export class ShoesService {
         } else {
           const resCV = await this.prisma.colorVariation.create({
             data: {
-              color: cv.color,
+              color: JSON.parse(cv.color),
               image_url: cv.image_url,
               shoe_id: shoeResponse.id,
             },

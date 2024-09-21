@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { Role } from 'src/authentication/role.enum';
+import { StatusEnum } from 'src/common/all.enum';
 
 export class CreateUserDto {
   id: string;
@@ -45,7 +46,7 @@ export class CreateUserDto {
     enumName: 'Status',
     enum: ['ACTIVE', 'PENDING', 'DELETE'],
   })
-  status: string;
+  status: StatusEnum;
 
   readonly hash: string;
   image_name: string;

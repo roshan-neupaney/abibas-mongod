@@ -8,6 +8,9 @@ import {
   Delete,
   HttpStatus,
   HttpCode,
+  UsePipes,
+  ValidationPipe,
+  HttpException,
 } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { CreateAuthenticationDto } from './dto/create-authentication.dto';
@@ -24,8 +27,13 @@ export class AuthenticationController {
 
   @Public()
   @Post('signup')
+  @UsePipes(new ValidationPipe())
   create(@Body() createAuthenticationDto: CreateAuthenticationDto) {
-    return this.authenticationService.create(createAuthenticationDto);
+    try{
+      return this.authenticationService.create(createAuthenticationDto);
+    } catch(e) {
+      console.log(e)
+    }
   }
 
   @Public()
@@ -42,7 +50,11 @@ export class AuthenticationController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   login(@Body() body: CreateLoginDto){
-    return this.authenticationService.login(body)
+    try {
+      return this.authenticationService.login(body)
+    } catch (error) {
+      return new HttpException(error.message, error.status)
+    }
   }
 
   @Public()

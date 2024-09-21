@@ -47,7 +47,6 @@ export class ShoesController {
           return { ...cv, image_url: imageName.fileName };
         }),
       );
-
       return this.shoesService.create(createShoeDto, colorVariation);
     } catch (e) {
       // throw new HttpException(e.message, e.status);

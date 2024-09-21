@@ -31,6 +31,7 @@ export class UserService {
           lastName: true,
           mobile: true,
           role: true,
+          status: true,
           image_name: true,
         },
       });
@@ -55,6 +56,7 @@ export class UserService {
         lastName: true,
         mobile: true,
         role: true,
+        status: true,
         image_name: true,
       },
     });
@@ -76,6 +78,7 @@ export class UserService {
         lastName: true,
         mobile: true,
         role: true,
+        status: true,
         image_name: true,
       },
     });
@@ -96,6 +99,7 @@ export class UserService {
         lastName: true,
         mobile: true,
         role: true,
+        status: true,
         image_name: true,
       },
     });

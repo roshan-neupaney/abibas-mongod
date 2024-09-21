@@ -24,8 +24,6 @@ export class CreateShoeDto {
   price: string;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
   previous_price: string;
 
   @ApiProperty()
@@ -51,5 +49,5 @@ export class CreateShoeDto {
   @ApiProperty()
   deleteColorVariation?: [];
   @ApiProperty()
-  deleteSize?: [];
+  deleteSizeVariation?: [];
 }
