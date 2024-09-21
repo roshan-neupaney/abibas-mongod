@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Order" ALTER COLUMN "shoe_id" DROP DEFAULT,
+ALTER COLUMN "userId" DROP DEFAULT;

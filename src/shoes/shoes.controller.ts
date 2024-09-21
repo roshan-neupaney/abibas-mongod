@@ -6,20 +6,26 @@ import {
   Patch,
   Param,
   Delete,
-  UploadedFile,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
   Query,
+  UploadedFiles,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ShoesService } from './shoes.service';
 import { CreateShoeDto } from './dto/create-shoe.dto';
 import { UpdateShoeDto } from './dto/update-shoe.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from 'src/common/multer.config';
-import { throwError } from 'rxjs';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { ShoesType } from './shoes.types';
+import { CreateCartDto } from './dto/create-cart.dto';
+import { AuthUser } from 'src/common/decorators/user.decorator';
+import { uploadImageWithNoSizes } from 'src/common/helper';
+import { VariationDto } from './dto/create-variation.dto';
+import { SizeDto } from './dto/create-size.dto';
+import { AuthUserType } from 'src/common/FileType.type';
 
 @Controller('shoes')
 @UsePipes(ValidationPipe)
@@ -28,18 +34,27 @@ export class ShoesController {
   constructor(private readonly shoesService: ShoesService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('file', multerOptions))
-  create(
+  @UseInterceptors(AnyFilesInterceptor())
+  async create(
     @Body() createShoeDto: CreateShoeDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles() files: Express.Multer.File[],
   ) {
-    createShoeDto.image_name = file.filename;
-    console.log(file)
-    return this.shoesService.create(createShoeDto);
+    try {
+      const colorVariation = await Promise.all(
+        createShoeDto.color_variation.map(async (cv: any) => {
+          const file = files.shift();
+          const imageName = await uploadImageWithNoSizes(file);
+          return { ...cv, image_url: imageName.fileName };
+        }),
+      );
+      return this.shoesService.create(createShoeDto, colorVariation);
+    } catch (e) {
+      // throw new HttpException(e.message, e.status);
+    }
   }
 
   @Get()
-  findAll(@Query() query:ShoesType) {
+  findAll(@Query() query: ShoesType) {
     return this.shoesService.findAll(query);
   }
 
@@ -49,12 +64,54 @@ export class ShoesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateShoeDto: UpdateShoeDto) {
-    return this.shoesService.update(id, updateShoeDto);
+  @UseInterceptors(AnyFilesInterceptor())
+  async update(
+    @Param('id') id: string,
+    @Body() updateShoeDto: UpdateShoeDto,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    const color_variation = updateShoeDto.color_variation || [];
+    const colorVariation = await Promise.all(
+      color_variation?.map(async (cv) => {
+        if (cv.file) {
+          return { ...cv, image_url: cv.file };
+        } else {
+          const file = files.shift();
+          const image = await uploadImageWithNoSizes(file);
+          return { ...cv, image_url: image.fileName };
+        }
+      }),
+    );
+    return this.shoesService.update(id, updateShoeDto, colorVariation);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.shoesService.remove(id);
+  }
+
+  @Post('user/cart')
+  createCart(@Body() createCartDto: CreateCartDto, @AuthUser() user: any) {
+    createCartDto.user_id = user.sub;
+    return this.shoesService.createCart(createCartDto);
+  }
+
+  @Get('user/cart')
+  findAllCart(@AuthUser() user: AuthUserType) {
+    return this.shoesService.findAllCart(user.sub);
+  }
+
+  @Delete('user/cart/:id')
+  deleteCart(@Param('id') id: string) {
+    return this.shoesService.deleteCart(id);
+  }
+
+  @Post('user/favorite/:id')
+  createFavorite(@Param('id') id: string, @AuthUser() user: AuthUserType) {
+    return this.shoesService.createFavorites(id, user.sub);
+  }
+  @Get('user/favorite')
+  findAllFavorite(@AuthUser() user: AuthUserType) {
+    return this.shoesService.findAllFavorites(user.sub);
   }
 }

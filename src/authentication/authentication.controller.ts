@@ -8,6 +8,9 @@ import {
   Delete,
   HttpStatus,
   HttpCode,
+  UsePipes,
+  ValidationPipe,
+  HttpException,
 } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { CreateAuthenticationDto } from './dto/create-authentication.dto';
@@ -15,17 +18,25 @@ import { UpdateAuthenticationDto } from './dto/update-authentication.dto';
 import { CreateRefreshDto } from './dto/create-refresh.dto';
 import { CreateLoginDto } from './dto/create-login.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('authentication')
 @ApiTags('authentication')
 export class AuthenticationController {
   constructor(private readonly authenticationService: AuthenticationService) {}
 
+  @Public()
   @Post('signup')
+  @UsePipes(new ValidationPipe())
   create(@Body() createAuthenticationDto: CreateAuthenticationDto) {
-    return this.authenticationService.create(createAuthenticationDto);
+    try{
+      return this.authenticationService.create(createAuthenticationDto);
+    } catch(e) {
+      console.log(e)
+    }
   }
 
+  @Public()
   @Post('refresh')
   refresh(@Body() createRefreshDto: CreateRefreshDto) {
     try {
@@ -35,12 +46,18 @@ export class AuthenticationController {
     }
   }
 
+  @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   login(@Body() body: CreateLoginDto){
-    return this.authenticationService.login(body)
+    try {
+      return this.authenticationService.login(body)
+    } catch (error) {
+      return new HttpException(error.message, error.status)
+    }
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.authenticationService.findAll();

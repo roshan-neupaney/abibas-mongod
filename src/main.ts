@@ -7,7 +7,6 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.useGlobalPipes(new ValidationPipe());
 
   const config = new DocumentBuilder()
     .setTitle('API')
@@ -23,8 +22,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  app.useStaticAssets(path.join(__dirname, '../public/uploads/images'));
-  
-  await app.listen(3000);
+  app.setBaseViewsDir(path.join(__dirname, '..', 'views'));
+  app.setViewEngine('ejs');
+
+  app.useStaticAssets(path.join(__dirname, '../public/uploads'));
+  app.useGlobalPipes(new ValidationPipe({ transform: true }))
+  app.enableCors();
+  await app.listen(3001);
 }
 bootstrap();

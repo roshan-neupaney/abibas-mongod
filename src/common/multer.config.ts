@@ -12,3 +12,13 @@ export const multerOptions = {
     },
   })
 };
+
+export const multerVideoOptions = {
+  storage: diskStorage({
+    destination:join('./public', 'uploads', 'videos'),
+    filename: (req, file, cb) => {
+      const uniqueSuffix = randomUUID() + extname(file.originalname);
+      cb(null, uniqueSuffix);
+    },
+  })
+};

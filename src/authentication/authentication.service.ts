@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
 import { CreateAuthenticationDto } from './dto/create-authentication.dto';
 import { UpdateAuthenticationDto } from './dto/update-authentication.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -32,9 +32,9 @@ export class AuthenticationService {
           role: Role[createAuthenticationDto.role],
         },
       });
-      const token = await this.getToken(user.id, user.email, user.role);
-      await this.updateRtHash(user.id, token.refresh_token);
-      return token;
+      // const token = await this.getToken(user.id, user.email, user.role);
+      // await this.updateRtHash(user.id, token.refresh_token);
+      return user;
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -80,11 +80,11 @@ export class AuthenticationService {
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('AT_SECRET'),
-        expiresIn: '8h',
+        expiresIn: '8d',
       }),
       this.jwtService.signAsync(jwtPayload, {
         secret: this.config.get<string>('RT_SECRET'),
-        expiresIn: '7d',
+        expiresIn: '14d',
       }),
     ]);
     return {
@@ -107,7 +107,6 @@ export class AuthenticationService {
   }
 
   async login(body: CreateLoginDto) {
-    try {
       const user = await this.prisma.myUsers.findUnique({
         where: {
           email: body.email,
@@ -124,8 +123,6 @@ export class AuthenticationService {
       await this.updateRtHash(user.id, tokens.refresh_token);
 
       return tokens;
-    } catch (error) {
-      return error;
-    }
+   
   }
 }

@@ -1,38 +1,53 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsArray, IsNotEmpty, IsString } from 'class-validator';
+import { StatusEnum } from 'src/common/all.enum';
 
 export class CreateShoeDto {
-    @ApiProperty()
-    @IsNotEmpty()
-    title: string;
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  title: string;
 
-    @ApiProperty()
-    @IsNotEmpty()
-    brand: string;
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  brand_id: string;
 
-    @ApiProperty()
-    @IsNotEmpty()
-    size: string;
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  details: string;
 
-    @ApiProperty()
-    @IsNotEmpty()
-    price: string;
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  price: string;
 
-    @ApiProperty()
-    @IsNotEmpty()
-    color: string;
+  @ApiProperty()
+  previous_price: string;
 
-    @ApiProperty()
-    @IsNotEmpty()
-    description: string;
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  description: string;
 
-    @ApiProperty()
-    @IsNotEmpty()
-    category: string;
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  category_id: string;
 
-    @ApiProperty()
-    file: Express.Multer.File;
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  status: StatusEnum;
 
-    image_name: string;
-    
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsArray()
+  color_variation: any;
+
+  @ApiProperty()
+  deleteColorVariation?: [];
+  @ApiProperty()
+  deleteSizeVariation?: [];
 }

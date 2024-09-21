@@ -9,61 +9,173 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id          String    @id @default(uuid())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  hash        String
-  hashedRt    String?
-  email       String    @unique
-  firstName   String?
-  lastName    String?
-  mobile      String?
-  role        Role      @default(USER)
-  @@map("users")
-}
-
 model MyUsers {
-  id          String    @id @default(uuid())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  hash        String
-  hashedRt    String?
-  email       String    @unique
-  firstName   String?
-  lastName    String?
-  mobile      String?
-  role        Role      @default(USER)
+  id                  String              @id @default(uuid())
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  hash                String          
+  hashedRt            String?         
+  email               String              @unique
+  firstName           String?         
+  lastName            String?         
+  mobile              String?         
+  status              Status              @default(ACTIVE)
+  role                Role                @default(USER)
+  favorite            Favorite[]
+  image_name          String?
+  cart                Cart[]
+  order               Order[]
+  interaction         Interaction[]
   @@map("myUsers")
 }
 
-model AnimalCategory {
-  id          String    @id @default(uuid())
-  title       String
-  description String
-  animals     Animal[]
+model Interaction {
+  id                  String              @id @default(uuid())
+  user_id             String
+  shoe_id             String
+  action_type         String
+  interaction_score   Int
+  shoe                Shoe                @relation(fields: [shoe_id], references: [id])
+  user                MyUsers             @relation(fields: [user_id], references: [id])
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt
 }
 
-model Animal {
+
+model Cart {
   id                  String              @id @default(uuid())
-  title               String
-  description         String
-  animal_category_id  String
-  animalCategory      AnimalCategory      @relation(fields: [animal_category_id], references:[id])
-  image_name          String?
+  shoe_id             String
+  user_id             String
+  size                String
+  color_variation_id  String
+  count               Int                 @default(1)
+  colorVariation      ColorVariation      @relation(fields:[color_variation_id], references:[id])
+  user                MyUsers             @relation(fields:[user_id], references:[id])
+  shoe                Shoe                @relation(fields: [shoe_id], references: [id])
 }
 
 model Shoe {
   id                  String              @id @default(uuid())
   title               String
-  brand               String
-  color               String
-  size                String
+  brand_id            String
   price               String
+  previous_price      String   
   description         String
-  category            String
+  category_id         String              
+  details             String              
+  cart                Cart[]
+  order               Order[]         
+  favorite            Favorite?     
+  status              Status              @default(PENDING)
+  colorVariation      ColorVariation[]
+  category            Category            @relation(fields:[category_id], references:[id])
+  brand               Brand               @relation(fields:[brand_id], references:[id])
+  interaction         Interaction[]
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt
+}
+
+model Category {
+  id                  String              @id @default(uuid())
+  title               String
+  description         String
+  shoe                Shoe[]
+  status              Status              @default(PENDING)
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt
+}
+
+model ColorVariation {
+  id                  String              @id @default(uuid())
+  color               String[]            @default([])
+  image_url           String 
+  sizes               Size[]   
+  shoe_id             String
+  cart                Cart[]
+  shoe                Shoe              @relation(fields:[shoe_id], references:[id], onDelete: Cascade)             
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt
+}
+
+model Color {
+  id                  String              @id @default(uuid())
+  title               String
+  color_code          String
+  status              Status              @default(PENDING)
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt
+}
+
+model Size {
+  id                  String              @id @default(uuid())
+  size                String
+  stock               String              @default("1")
+  color_variation_id  String              
+  colorVariation      ColorVariation      @relation(fields:[color_variation_id], references:[id], onDelete: Cascade)  
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt
+}
+
+model Brand {
+  id                  String              @id @default(uuid())
+  title               String
+  description         String
   image_name          String
-  createdAt           DateTime       @default(now()) @map("created_at")
+  shoe                Shoe[]
+  status              Status              @default(PENDING)
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt
+}
+
+model Favorite {
+  id                  String              @id @default(uuid())
+  shoe_id             String              @unique
+  user_id             String              
+  shoe                Shoe                @relation(fields:[shoe_id], references:[id])  
+  user                MyUsers             @relation(fields:[user_id], references:[id])  
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt
+}
+
+model Order {
+  id                  String              @id @default(uuid())
+  user_id             String               
+  totalAmount         String
+  shoe_id             String              
+  user                MyUsers             @relation(fields:[user_id], references:[id])        
+  shoe                Shoe                @relation(fields:[shoe_id], references:[id])        
+  status              OrderStatus         @default(PENDING)
+  payment             Payment?            
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+}
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+model Payment {
+  id                  String              @id @default(uuid())
+  orderId             String              @unique
+  amount              String
+  status              PaymentStatus       @default(PENDING)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  order               Order               @relation(fields: [orderId], references: [id])
+
+}
+enum Status {
+  PENDING
+  ACTIVE
+  DEACTIVATED
+}
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
 }
 
 enum Role {
@@ -73,3 +185,5 @@ enum Role {
   PROVIDER
   USER
 }
+
+
