@@ -5,12 +5,12 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model MyUsers {
-  id                  String              @id @default(uuid())
+  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
   hash                String          
@@ -32,7 +32,7 @@ model MyUsers {
 }
 
 model Interaction {
-  id                  String              @id @default(uuid())
+  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
   user_id             String
   shoe_id             String
   action_type         String
@@ -45,7 +45,7 @@ model Interaction {
 
 
 model Cart {
-  id                  String              @id @default(uuid())
+  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
   shoe_id             String
   user_id             String
   size                String
@@ -57,7 +57,7 @@ model Cart {
 }
 
 model Shoe {
-  id                  String              @id @default(uuid())
+  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
   title               String
   brand_id            String
   price               String
@@ -80,7 +80,7 @@ model Shoe {
 }
 
 model Category {
-  id                  String              @id @default(uuid())
+  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
   title               String
   description         String
   shoe                Shoe[]
@@ -90,7 +90,7 @@ model Category {
 }
 
 model ColorVariation {
-  id                  String              @id @default(uuid())
+  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
   color               String[]            @default([])
   image_url           String 
   sizes               Size[]   
@@ -102,7 +102,7 @@ model ColorVariation {
 }
 
 model Color {
-  id                  String              @id @default(uuid())
+  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
   title               String
   color_code          String
   status              Status              @default(PENDING)
@@ -111,7 +111,7 @@ model Color {
 }
 
 model Size {
-  id                  String              @id @default(uuid())
+  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
   size                String
   stock               String              @default("1")
   color_variation_id  String              
@@ -121,7 +121,7 @@ model Size {
 }
 
 model Brand {
-  id                  String              @id @default(uuid())
+  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
   title               String
   description         String
   image_name          String
@@ -132,7 +132,7 @@ model Brand {
 }
 
 model Favorite {
-  id                  String              @id @default(uuid())
+  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
   shoe_id             String              @unique
   user_id             String              
   shoe                Shoe                @relation(fields:[shoe_id], references:[id])  
@@ -142,7 +142,7 @@ model Favorite {
 }
 
 model Rating {
-  id                  String              @id @default(uuid())
+  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
   shoe_id             String
   user_id             String              
   rate                Float                 @default(0)
@@ -152,7 +152,7 @@ model Rating {
   updatedAt           DateTime            @updatedAt
 }
 model Review {
-  id                  String              @id @default(uuid())
+  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
   shoe_id             String
   user_id             String              
   review              String
@@ -163,7 +163,7 @@ model Review {
 }
 
 model Order {
-  id                  String              @id @default(uuid())
+  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
   user_id             String               
   totalAmount         String
   shoe_id             String              
@@ -182,7 +182,7 @@ enum OrderStatus {
 }
 
 model Payment {
-  id                  String              @id @default(uuid())
+  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
   orderId             String              @unique
   amount              String
   status              PaymentStatus       @default(PENDING)
