@@ -83,6 +83,7 @@ export class ShoesService {
         category: true,
         colorVariation: true,
         brand: true,
+        rating: true,
       },
       orderBy: {
         createdAt: 'desc',

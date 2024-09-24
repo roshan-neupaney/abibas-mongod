@@ -18,6 +18,7 @@ import { CategoryModule } from './category/category.module';
 import { BrandModule } from './brand/brand.module';
 import { ColorModule } from './color/color.module';
 import { InteractionModule } from './interaction/interaction.module';
+import { RatingModule } from './rating/rating.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { InteractionModule } from './interaction/interaction.module';
     BrandModule,
     ColorModule,
     InteractionModule,
+    RatingModule,
   ],
   controllers: [AppController],
   providers: [

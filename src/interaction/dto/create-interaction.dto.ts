@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsInt, IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class CreateInteractionDto {
     @ApiProperty()
@@ -17,7 +17,7 @@ export class CreateInteractionDto {
 
     @ApiProperty()
     @IsNotEmpty()
-    @IsInt()
+    @IsNumber()
     interaction_score: number
 
 }
