@@ -26,6 +26,8 @@ model MyUsers {
   cart                Cart[]
   order               Order[]
   interaction         Interaction[]
+  rating              Rating[]
+  review              Review[]
   @@map("myUsers")
 }
 
@@ -34,7 +36,7 @@ model Interaction {
   user_id             String
   shoe_id             String
   action_type         String
-  interaction_score   Int
+  interaction_score   Float
   shoe                Shoe                @relation(fields: [shoe_id], references: [id])
   user                MyUsers             @relation(fields: [user_id], references: [id])
   createdAt           DateTime            @default(now()) @map("created_at")
@@ -71,6 +73,8 @@ model Shoe {
   category            Category            @relation(fields:[category_id], references:[id])
   brand               Brand               @relation(fields:[brand_id], references:[id])
   interaction         Interaction[]
+  rating              Rating[]
+  review              Review[]
   createdAt           DateTime            @default(now()) @map("created_at")
   updatedAt           DateTime            @updatedAt
 }
@@ -131,6 +135,27 @@ model Favorite {
   id                  String              @id @default(uuid())
   shoe_id             String              @unique
   user_id             String              
+  shoe                Shoe                @relation(fields:[shoe_id], references:[id])  
+  user                MyUsers             @relation(fields:[user_id], references:[id])  
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt
+}
+
+model Rating {
+  id                  String              @id @default(uuid())
+  shoe_id             String
+  user_id             String              
+  rate                Float                 @default(0)
+  shoe                Shoe                @relation(fields:[shoe_id], references:[id])  
+  user                MyUsers             @relation(fields:[user_id], references:[id])  
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt
+}
+model Review {
+  id                  String              @id @default(uuid())
+  shoe_id             String
+  user_id             String              
+  review              String
   shoe                Shoe                @relation(fields:[shoe_id], references:[id])  
   user                MyUsers             @relation(fields:[user_id], references:[id])  
   createdAt           DateTime            @default(now()) @map("created_at")
